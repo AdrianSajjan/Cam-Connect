@@ -1,20 +1,19 @@
-import { Server } from "@/package/server";
-import { WebSocket } from "@/package/socket";
+import { WebSocketServer } from "ws";
 
-const server = Server.create()
-  .handler({
-    route: "/",
-    method: "GET",
-    handler: (req, res) => {
-      res.writeHead(200, { "Content-Type": "application/json" }).end(
-        JSON.stringify({
-          url: req.url,
-          method: req.method,
-          message: "Server is up and running",
-        })
-      );
-    },
-  })
-  .serve();
+import { Logger } from "@/package/logger";
+import { createInstance } from "@/lib/utils";
+import { config } from "@/config/app";
 
-WebSocket.create({ server: server.instance });
+const logger = Logger.create("server");
+
+const wss = createInstance(WebSocketServer, { port: config.wss.port });
+
+wss.on("connection", function connection(ws) {
+  ws.on("error", console.error);
+
+  ws.on("message", function message(data) {
+    console.log("received: %s", data);
+  });
+});
+
+logger.log("wss has started on port", config.wss.port);

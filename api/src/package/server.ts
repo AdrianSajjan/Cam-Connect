@@ -1,3 +1,4 @@
+import { createInstance } from "@/lib/utils";
 import http from "node:http";
 
 interface Listener {
@@ -30,11 +31,11 @@ export class Server {
   private listeners: Listener[];
   private middlewares: Middleware[];
 
-  get instance() {
+  public get instance() {
     return this.server;
   }
 
-  constructor(props?: CreateServer) {
+  public constructor(props?: CreateServer) {
     this.listeners = [];
     this.middlewares = [];
     this.port = props?.port ?? 8000;
@@ -43,7 +44,7 @@ export class Server {
   }
 
   public static create(props?: CreateServer) {
-    return new Server(props);
+    return createInstance(Server, props);
   }
 
   private listen(
